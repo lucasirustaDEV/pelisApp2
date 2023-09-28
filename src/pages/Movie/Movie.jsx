@@ -70,9 +70,9 @@ const Movie = () => {
     <div className="app-layout">
       <header className="app-header">pelisApp Header</header>
       <main className="app-main">
-        <div className="movie-details">
+        <div className="movie-details container align-items-center">
           {/* <div style={backgroundStyle} className="background-image"></div> */}
-          <div className="movie-info">
+          <div className="movie-info row">
           {watchedMovie && (
            <>
             <div className="col-md-2 mb-3">
@@ -81,6 +81,9 @@ const Movie = () => {
             <div className="col-md-2 mb-3">
               <h4 className="mt-2">{watchedMovie.title}</h4>
               {watchedMovie.release_date}
+            </div>
+            <div className="col-md-2 mb-3">
+              <p className="btn btn-lg btn-primary">Guardar</p>
             </div>
             </>
             )}
