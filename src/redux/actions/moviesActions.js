@@ -21,5 +21,28 @@ const getWatchedMoviesAsync = createAsyncThunk('getWatchedMoviesAsync', async ( 
     }
 })
 
+const getWatchedMovieAsync = createAsyncThunk('getWatchedMovieAsync', async (queryParams = '') => {
+    try {
+        const response = await axios.get(URL_MOVIES + queryParams)
+        return response.data.response
+    } catch (err) {
+        console.log(err)        
+        return []
+    }
+})
 
-export { getWatchedMoviesAsync, setPage }
+const updateWatchedMovieAsync = createAsyncThunk('updateWatchedMovieAsync', async ( queryParams = '' ) => {
+    try {
+        //console.log(params)
+        //const { id, tmdb_id } = params
+        //console.log(queryParams)
+        const response = await axios.post(URL_MOVIES + '/update', queryParams)
+        return response.data.response
+    } catch (err) {
+        console.log(err)        
+        return []
+    }
+})
+
+
+export { getWatchedMoviesAsync, setPage, getWatchedMovieAsync, updateWatchedMovieAsync}

@@ -5,6 +5,7 @@ const MovieCardSelect = ( { movie, isSelected, onSelect } ) => {
 
     const toggleSelection = () => {
       onSelect(movie.id)
+      console.log(movie.id)
     }
   
     return (

@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { getWatchedMoviesAsync, setPage } from "../actions/moviesActions";
+import { getWatchedMoviesAsync, setPage, getWatchedMovieAsync, updateWatchedMovieAsync } from "../actions/moviesActions";
 
 const initialState = {
     watchedMovies: [],
@@ -26,6 +26,42 @@ const moviesReducers = createReducer( initialState,
             return newState
         })
         .addCase(getWatchedMoviesAsync.rejected, (state, action) =>{
+            const newState = { ...state, loading: false}
+            return newState
+        })
+
+        .addCase(getWatchedMovieAsync.fulfilled, (state, action) =>{
+            console.log(action.payload)
+            const newState = { 
+                ...state, 
+                watchedMovie : action.payload,
+                loading: false
+            }
+            return newState
+        })
+        .addCase(getWatchedMovieAsync.pending, (state, action) =>{
+            const newState = { ...state, loading: true}
+            return newState
+        })
+        .addCase(getWatchedMovieAsync.rejected, (state, action) =>{
+            const newState = { ...state, loading: false}
+            return newState
+        })
+
+        .addCase(updateWatchedMovieAsync.fulfilled, (state, action) =>{
+            console.log(action.payload)
+            const newState = { 
+                ...state, 
+                watchedMovie : action.payload,
+                loading: false
+            }
+            return newState
+        })
+        .addCase(updateWatchedMovieAsync.pending, (state, action) =>{
+            const newState = { ...state, loading: true}
+            return newState
+        })
+        .addCase(updateWatchedMovieAsync.rejected, (state, action) =>{
             const newState = { ...state, loading: false}
             return newState
         })

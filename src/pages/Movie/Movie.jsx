@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import MovieCardSelect from '../../components/Movie/MovieCardSelect';
 import { getMovieDetailTmdb } from '../../services/movieQueries';
 import MovieCard from '../../components/Movie/MovieCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { getWatchedMovieAsync, updateWatchedMovieAsync } from '../../redux/actions/moviesActions';
 
 
 const Movie = () => {
@@ -11,15 +13,23 @@ const Movie = () => {
   const params = useParams()
   const movieId = params.id
 
-  let [watchedMovie, setWatchedMovie] = useState(null)
+  const dispatch = useDispatch()
+  const {watchedMovie, loading} = useSelector(store => store.moviesReducers)
+
+  //let [watchedMovie, setWatchedMovie] = useState(null)
   let [watchedMovies, setWatchedMovies] = useState(null)
   const [selectedMovieId, setSelectedMovieId] = useState(null)
 
+  const [bodyData, setBodyData] = useState({
+    tmdb_id: "",
+  })
+
   const handleMovieSelect = (movieId) => {
     setSelectedMovieId(movieId)
+    setBodyData(movieId)
   }
 
-  useEffect(() => {
+/*   useEffect(() => {
     const fetchData = async () => {
       try {
         const movie = await getWatchedMovie(movieId)
@@ -31,14 +41,21 @@ const Movie = () => {
     };
   
     fetchData();
-  }, [movieId]); 
+  }, [movieId]); */ 
+
+  useEffect(()=>{
+    //if(Object.keys(watchedMovie).length === 0){}
+      //console.log("no hay peli")
+      dispatch(getWatchedMovieAsync(movieId))
+
+  },[movieId])
   
   useEffect(() => {
     if (watchedMovie && watchedMovie.tmdb_ids && watchedMovie.tmdb_ids.length > 1) {
       console.log("CUMPLE LAS CONDICIONES")
       const fetchMovies = async () => {
         const moviesPromises = watchedMovie.tmdb_ids.map(async (tmdbId) => {
-          console.log("ESTOY DENTRO DEL MAP")
+          //console.log("ESTOY DENTRO DEL MAP")
           try {
             return await getMovieDetailTmdb(tmdbId)
           } catch (error) {
@@ -48,15 +65,25 @@ const Movie = () => {
         });
         const movies = await Promise.all(moviesPromises)
         setWatchedMovies(movies)
-        console.log(watchedMovies)
+        //console.log(watchedMovies)
       }
   
       fetchMovies()
     }
   }, [watchedMovie])
   
+  const updateWatchedMovie = (e) => {
+    e.preventDefault()
+    const queryParams = { id: movieId, tmdb_id: selectedMovieId }
+    //console.log(body)
+    console.log(queryParams)
+    dispatch(updateWatchedMovieAsync(queryParams))
+      .then((res) => {
+        console.log(res)
+      })
+  }
   
-  const backgroundStyle = watchedMovie
+/*   const backgroundStyle = watchedMovie
     ? {
         backgroundImage: `url(${import.meta.env.VITE_URL_POSTER + watchedMovie.poster_path})`,
         backgroundSize: 'cover',
@@ -64,7 +91,7 @@ const Movie = () => {
         backgroundRepeat: 'no-repeat',
         minHeight: '200px',
       }
-    : {};
+    : {}; */
 
   return (
     <div className="app-layout">
@@ -73,19 +100,25 @@ const Movie = () => {
         <div className="movie-details container align-items-center">
           {/* <div style={backgroundStyle} className="background-image"></div> */}
           <div className="movie-info row">
-          {watchedMovie && (
-           <>
-            <div className="col-md-2 mb-3">
-              <img className="img-thumbnail img-fluid cursor" alt={watchedMovie.title} src={import.meta.env.VITE_URL_POSTER + watchedMovie.poster_path} />
-            </div>
-            <div className="col-md-2 mb-3">
-              <h4 className="mt-2">{watchedMovie.title}</h4>
-              {watchedMovie.release_date}
-            </div>
-            <div className="col-md-2 mb-3">
-              <p className="btn btn-lg btn-primary">Guardar</p>
-            </div>
-            </>
+            {loading === true ? (
+              'Loading...'
+            ) : (
+              watchedMovie && watchedMovie.poster_path ? (
+              <>  
+              <div className="col-md-2 mb-3">
+                <img className="img-thumbnail img-fluid cursor" alt={watchedMovie.title} src={import.meta.env.VITE_URL_POSTER + watchedMovie.poster_path} />
+              </div>
+              <div className="col-md-2 mb-3">
+                <h4 className="mt-2">{watchedMovie.title}</h4>
+                {watchedMovie.release_date}
+              </div>
+              <div className="col-md-2 mb-3">
+                <p className="btn btn-lg btn-primary" onClick={updateWatchedMovie}>Guardar</p>
+              </div>
+              </>
+            ) : (
+              <p>Información no disponible</p>
+            )
             )}
           </div>
         </div>
